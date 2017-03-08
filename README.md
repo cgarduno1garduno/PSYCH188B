@@ -1,3 +1,7 @@
 ### PSYCH 188B
 
-Add your individual project file(s)!
+##### Machine Learning for fMRI Data
+
+Faces and Objects in VTC (fMRI).
+
+Get data [here](http://data.pymvpa.org/datasets/haxby2001/)!
