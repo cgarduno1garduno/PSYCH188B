@@ -46,4 +46,24 @@ features, labels = load_haxby_data(cwd, 'subj4', 'mask4_vt'); sub4 = np.hstack((
 features, labels = load_haxby_data(cwd, 'subj5', 'mask4_vt'); sub5 = np.hstack((labels, features))
 print "Subject 1:", sub1.shape, "\nSubject 2:", sub2.shape, "\nSubject 3:", sub3.shape, "\nSubject 4:", sub4.shape, "\nSubject 5:", sub5.shape
 
+# this will work on the last data file uploaded (sub5)
+# still getting error messages
+label_names = labels['labels']
+label_chunks= labels['chunks']
 
+for i in range(len(label_names)):
+    # Initialize labels
+    if i==0: cur_label = label_names[0]
+    else   : cur_label = label_names[i]
+    
+    # Append rows to temporary array
+    # Let A be a temporary array with the feature values for that chunk
+    # Let B be the final array with the mean values
+    A = np.array([])
+    B = np.array([])
+    if label_names[i+1]!=cur_label:
+        A = np.hstack((label_chunks[i], np.mean(A, axis=0)))
+        A = np.hstack((cur_label, A))
+        B = np.vstack((B, A))
+    else: 
+        A = np.vstack((A, features[i]))
