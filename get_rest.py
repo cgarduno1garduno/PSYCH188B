@@ -1,3 +1,10 @@
+################################################################################
+# @author Cristopher Garduno Luna
+# 
+# Average the 'rest' values by collapsing along the columns such that the output
+# is an m x 1 array where m is the number of features
+################################################################################
+
 def get_rest(labels, features):
     # @param labels   : n x 2 dataframe
     # @param features : n x m array
