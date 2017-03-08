@@ -1,7 +1,7 @@
 # there is a 6-8 second lag for BOLD signal
 
 import os
-import numpy as n
+import numpy as np
 
 # data.pymvpa.org/datasets/haxby2001
 def load_haxby_data(datapath, sub, mask=None):
