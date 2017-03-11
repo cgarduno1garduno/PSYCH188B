@@ -5,12 +5,7 @@ def average_trials(features, labels):
     chunks = range(np.max(labels['chunks'])+1)       # List of chunks
     categories = np.unique(labs['labels'])           # Get categories, array of categories
     
-    # Initialize final array with dimensions:
-    #   Number of rows = number of chunks * number of categories
-    #   Number of columns = number of features + 2
-    #averaged = np.empty([len(chunks)*len(categories),len(feat.T)+2])
-    
-    averaged = []
+    averaged = [] # Initialized output matrix
     
     for chunk in chunks:
         # split2chunk returns labels + features in one array for 'chunk'
