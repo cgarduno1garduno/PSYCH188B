@@ -3,12 +3,21 @@
 ##### Machine Learning for fMRI Data
 Get subject neuroimaging data [here](http://data.pymvpa.org/datasets/haxby2001/)!
 
+Here we set up the necessary modules.
 ```python
 import os
 import numpy as np
 import nibabel as nb
 import pandas as pd
 ```
+
+Then we define some functions.
+
+- 'load_haxby_data'
+- 'split2chunk'
+- 'split2cat'
+- 'getrest'
+
 
 ```python
 def load_haxby_data(datapath, sub, mask=None):
