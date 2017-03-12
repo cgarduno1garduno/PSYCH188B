@@ -116,3 +116,24 @@ def average_trials(features, labels):
     # Convert 'averaged' list into numpy array and return
     return np.array(averaged)
 ```
+
+```python
+cwd = os.getcwd()+'/haxby2001-188B' # set working directory
+
+# MAKE A LIST OF SUBJECTS
+# ITERATE THROUGH LIST
+# LOAD SUBJECT, APPEND TO LIST
+# VERIFY CONTENTS OF LIST
+
+# Initialize subjects list
+subjects = []
+
+# Iterate through files in directory
+files = os.listdir(cwd)
+for f in files:
+    features = np.array([]); labels = np.array([])
+    features, labels = load_haxby_data(cwd, 'subj1', 'mask4_vt')
+    sub = average_trials(features, labels)
+    subjects.append(sub)
+print subjects, subjects[0][0, 0], subjects[0][0, 1], subjects[0][0, 2], type(subjects[0])
+```
