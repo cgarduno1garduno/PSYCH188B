@@ -9,6 +9,7 @@ import os
 import numpy as np
 import nibabel as nb
 import pandas as pd
+import sklearn.preprocessing as preproc
 ```
 
 Then we define some functions. 
@@ -121,8 +122,10 @@ def average_trials(features, labels):
                                                             #   Labels in indeces 0 and 1
             averaged.append(new_data) # Add current row to final data list
     
-    # Convert 'averaged' list into numpy array and return
-    return np.array(averaged)
+    # Convert 'averaged' list into numpy array and preprocess using preproc.StandardScaler
+    preprocessor = preproc.StandardScaler(with_mean=True, with_std=True).fit(np.array(averaged))
+    averaged_proc = preprocessor.transform(np.array(averaged)
+    return averaged_proc
 ```
 
 ```python
