@@ -11,13 +11,12 @@ import nibabel as nb
 import pandas as pd
 ```
 
-Then we define some functions.
-
-- 'load_haxby_data'
-- 'split2chunk'
-- 'split2cat'
-- 'getrest'
-
+Then we define some functions. 
+- `load_haxby_data` loads up the data into two variables: **labels** and **features**. **Labels** is an $n x 2$ Pandas dataframe where n is the number of samples, the first column contains categories, and the second column contains chunks/trials.
+- `split2chunk`
+- `split2cat`
+- `getrest`
+- `average_trials`
 
 ```python
 def load_haxby_data(datapath, sub, mask=None):
