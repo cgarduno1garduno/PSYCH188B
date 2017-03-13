@@ -17,7 +17,7 @@ Then we define some functions. Please look at the
 - `split2chunk` takes in labels and features and breaks the data into chunks by trial. 
 - `split2cat` takes in chunked dat and breaks it into categories.
 - `getrest` gets all of the rest data and averages across all rows. 
-- `pp_haxby` takes in **features** and **labels** and returns 
+- `average_trials` takes in **features** and **labels** and returns the data in a single matrix where each category is averaged by chunk.
 
 ```python
 def load_haxby_data(datapath, sub, mask=None):
@@ -87,7 +87,7 @@ def get_rest(labels, features):
 ```
 
 ```python
-def pp_haxby(features, labels):
+def average_trials(features, labels):
     rest = get_rest(labels, features)                # Get averaged rest data
     labs = labels[labels['labels'].values!='rest']   # Remove rest labels, labs is a pandas dataframe!
     feat = features[labels['labels'].values!='rest'] # remove rest features
@@ -140,7 +140,7 @@ for f in files:
     if f.startswith('sub'):
         features = np.array([]); labels = np.array([])
         features, labels = load_haxby_data(cwd, f, 'mask4_vt')
-        sub = pp_haxby(features, labels)
+        sub = average_trials(features, labels)
         subjects.append(sub)
 print subjects
 ```
