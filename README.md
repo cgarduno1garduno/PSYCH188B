@@ -3,22 +3,22 @@
 ##### Machine Learning for fMRI Data
 Get subject neuroimaging data [here](http://data.pymvpa.org/datasets/haxby2001/)!
 
-Here we set up the necessary modules.
+First, let's set up some modules. 
 ```python
 import os
 import numpy as np
 import nibabel as nib
 import pandas as pd
 import sklearn.preprocessing as preproc
+
+# Modules for plotting
+%matplotlib inline
+import matplotlib.pyplot as plt
 ```
 
-Then we define some functions. Please look at the 
-- `load_haxby_data` loads up the data into two variables: **labels** and **features**. **Labels** is an n x 2 Pandas dataframe where n is the number of samples, the first column contains categories, and the second column contains chunks/trials.
-- `split2chunk` takes in labels and features and breaks the data into chunks by trial. 
-- `split2cat` takes in chunked dat and breaks it into categories.
-- `getrest` gets all of the rest data and averages across all rows. 
-- `average_trials` takes in **features** and **labels** and returns the data in a single matrix where each category is averaged by chunk.
+Then we define some functions.
 
+`load_haxby_data`: Load fMRI features and labels
 ```python
 def load_haxby_data(datapath, sub, mask=None):
     # input arguments:
@@ -29,7 +29,6 @@ def load_haxby_data(datapath, sub, mask=None):
     # fmrilabel (pandas dataframe): length samples
     
     # generate variable containing path to subject filescwd = os.getcwd()+'/haxby2001-188B'
-
     fmriobj = nib.load(os.path.join(datapath, sub, 'train.nii.gz'))
     fmridata, fmriheader = fmriobj.get_data(), fmriobj.header
     fmridata = np.rollaxis(fmridata, -1)
@@ -47,6 +46,7 @@ def load_haxby_data(datapath, sub, mask=None):
     return maskeddata, fmrilabel[fmrilabel.chunks != 11]
 ```    
 
+`split2chunk`: Split data into chunks
 ```python
 def split2chunk(labels, features, chunk):
     # @param  labels    : n x 2 dataframe
@@ -62,6 +62,7 @@ def split2chunk(labels, features, chunk):
     return dat_chunk
 ```
 
+`split2cat`: Split chunked data into categories
 ```python
 def split2cat(category, dat_chunk):
     # @param category    : current category to extract
@@ -72,6 +73,7 @@ def split2cat(category, dat_chunk):
     return split_data
 ```
 
+`get_rest`: Return averaged rest data
 ```python
 def get_rest(labels, features):
     # @param labels   : n x 2 dataframe
@@ -85,7 +87,7 @@ def get_rest(labels, features):
     
     return rest
 ```
-
+`average_trials`: For each chunk of data, average the rows for each category and return array of averaged data
 ```python
 def average_trials(features, labels):
     rest = get_rest(labels, features)                # Get averaged rest data
@@ -122,19 +124,14 @@ def average_trials(features, labels):
     return np.array(averaged)
 ```
 
-We've defined our functions and now let's get to work. Please ensure that you're in the directory directly above `/haxby2001-188B` and that the subject files in `/haxby2001-188B` are named subj1, subj2, etc. 
+We've defined our functions and now let's get to work. Please ensure that `/haxby2001-188B` is a subfolder in your directory and that the subject files in are named `subj1`, `subj2`, etc. 
 ```python
 cwd = os.getcwd()+'/haxby2001-188B' # set working directory
-
-# MAKE A LIST OF SUBJECTS
-# ITERATE THROUGH LIST
-# LOAD SUBJECT, APPEND TO LIST
-# VERIFY CONTENTS OF LIST
 
 # Initialize subjects list
 subjects = []
 
-# Iterate through files in directory
+# Iterate through files in directory and average the data across chunks by category for each subject
 files = os.listdir(cwd)
 for f in files:
     if f.startswith('sub'):
@@ -142,7 +139,6 @@ for f in files:
         features, labels = load_haxby_data(cwd, f, 'mask4_vt')
         sub = average_trials(features, labels)
         subjects.append(sub)
-print subjects
 ```
 
 Now, we will make functions for our models. Here is the function for logistic regression.
