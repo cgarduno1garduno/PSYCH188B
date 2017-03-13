@@ -27,10 +27,6 @@ def load_haxby_data(datapath, sub, mask=None):
     # output:
     # maskeddata (numpy array): samples x voxels data matrix
     # fmrilabel (pandas dataframe): length samples
-    import os
-    import nibabel as nib
-    import pandas as pd
-    import numpy as np
     
     # generate variable containing path to subject filescwd = os.getcwd()+'/haxby2001-188B'
 
@@ -126,7 +122,7 @@ def average_trials(features, labels):
     return np.array(averaged)
 ```
 
-We've defined our functions and now let's get to work. Please ensure that you're in the directory directly above '/haxby2001-188B' and that the subject files in '/haxby2001-188B' are named subj1, subj2, etc. 
+We've defined our functions and now let's get to work. Please ensure that you're in the directory directly above `/haxby2001-188B` and that the subject files in `/haxby2001-188B` are named subj1, subj2, etc. 
 ```python
 cwd = os.getcwd()+'/haxby2001-188B' # set working directory
 
