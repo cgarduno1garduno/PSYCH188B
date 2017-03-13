@@ -9,15 +9,14 @@ import os
 import numpy as np
 import nibabel as nb
 import pandas as pd
-import sklearn.preprocessing as preproc
 ```
 
-Then we define some functions. 
-- `load_haxby_data` loads up the data into two variables: **labels** and **features**. **Labels** is an $n x 2$ Pandas dataframe where n is the number of samples, the first column contains categories, and the second column contains chunks/trials.
-- `split2chunk`
-- `split2cat`
-- `getrest`
-- `average_trials`
+Then we define some functions. Please look at the 
+- `load_haxby_data` loads up the data into two variables: **labels** and **features**. **Labels** is an n x 2 Pandas dataframe where n is the number of samples, the first column contains categories, and the second column contains chunks/trials.
+- `split2chunk` takes in labels and features and breaks the data into chunks by trial. 
+- `split2cat` takes in chunked dat and breaks it into categories.
+- `getrest` gets all of the rest data and averages across all rows. 
+- `average_trials` takes in **features** and **labels** and returns the data in a single matrix where the feature values are averaged across rows for each chunk of each category.
 
 ```python
 def load_haxby_data(datapath, sub, mask=None):
@@ -122,12 +121,11 @@ def average_trials(features, labels):
                                                             #   Labels in indeces 0 and 1
             averaged.append(new_data) # Add current row to final data list
     
-    # Convert 'averaged' list into numpy array and preprocess using preproc.StandardScaler
-    preprocessor = preproc.StandardScaler(with_mean=True, with_std=True).fit(np.array(averaged))
-    averaged_proc = preprocessor.transform(np.array(averaged)
-    return averaged_proc
+    # Convert 'averaged' list into numpy array and return
+    return np.array(averaged)
 ```
 
+We've defined our functions and now let's get to work. Please ensure that you're in the directory directly above '/haxby2001-188B' and that the subject files in '/haxby2001-188B' are named subj1, subj2, etc. 
 ```python
 cwd = os.getcwd()+'/haxby2001-188B' # set working directory
 
