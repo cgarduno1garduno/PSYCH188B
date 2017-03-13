@@ -11,6 +11,9 @@ import nibabel as nib
 import pandas as pd
 import sklearn.preprocessing as preproc
 
+from sklearn.cross_validation import cross_val_score
+from sklearn.model_selection import KFold
+
 # Modules for plotting
 %matplotlib inline
 import matplotlib.pyplot as plt
@@ -162,8 +165,12 @@ def logistic_regression(labels,features):
     y_pred_lr = logreg.decision_function(X_test)
   
     # Test our model and score it
-    score3 = logreg.score(X_test, y_test)
-    print("The logistic regression model has an accuracy score of:", score3)
+    score1 = logreg.score(X_test, y_test)
+    print("The logistic regression model has an accuracy score of:", score1)
+    
+    # Scores the average of ten tests with the model
+    score1_avg = cross_val_score(logreg, features, labels, scoring='accuracy', cv=10)
+    print("The logistic regression model has an average accuracy score of:", score1_avg.mean())
   
     return
 ```
@@ -190,7 +197,7 @@ def SVM_rbf_kernel(labels, features):
     param_grid = dict(gamma=possible_gamma, C=possible_C)
   
     # Create our cross-validation function
-    cv = StratifiedKFold(y_train, 10) # Uses our labels as our y-vector, makes 10 folds
+    cv = StratifiedKFold(y_train, 5) # Uses our labels as our y-vector, makes 5 folds
   
     # Create our svm model
     svc = SVC()
@@ -200,13 +207,30 @@ def SVM_rbf_kernel(labels, features):
     grid.fit(X_train, y_train)
     #print(grid.best_params_)
 
-    # Create our svm model with rbf kernels using our optimal params
+    # Create our svm model with rbf kernels using our optimal params and score it
     # Note that the ** syntax may not work in Python <3.5
-    svc_rbf = SVC(**grid.best_params_, kernel="rbf")
+    svc_rbf = SVC(**grid.best_params_, kernel="rbf", decision_function_shape = 'ovr')
     svc_rbf.fit(X_train, y_train)
     y_pred_svc = svc_rbf.decision_function(X_test)
-    score1 = svc_rbf.score(X_test, y_test)
-    print("The SVC model with RBF kernals has an accuracy score of:", score1)
+    score2 = svc_rbf.score(X_test, y_test)
+    
+    print("The SVC model with RBF kernals has an accuracy score of:", score2)
+    
+    # Scores the average of ten tests with the model
+    score2_avg = cross_val_score(svc_rbf, features, labels, scoring='accuracy', cv=10)
+    print("The SVM model with RBF kernals has an average score of:", score2_avg.mean())
+    
+    # Now we try our svm model with linear kernels using our optimal params and score it
+    svc_linear = SVC(**grid.best_params_, kernel="linear", decision_function_shape = 'ovr')
+    svc_linear.fit(X_train, y_train)
+    y_pred_svc = svc_linear.decision_function(X_test)
+    score3 = svc_linear.score(X_test, y_test)
+    
+    print("The SVM model with linear kernals has an accuracy score of:", score3)
+
+    # Scores the average of ten tests with the model
+    score3_avg = cross_val_score(svc_rbf, features, labels, scoring='accuracy', cv=10)
+    print("The SVM model with linear kernals has an average score of:", score3_avg.mean())
   
     return
 ```
@@ -285,7 +309,7 @@ def neural_network(labels,features):
     #y_train_vectorized.shape
   
     #remember that the bigger the nb_epoch the better the fit (so go bigger than 50)
-    model.fit(X_train, y_train_vectorized, nb_epoch=150, batch_size=50, verbose = 0)
+    model.fit(X_train, y_train_vectorized, nb_epoch=1000, batch_size=20, verbose = 0)
 
     #now our neural network works like a scikit-learn classifier
     proba = model.predict_proba(X_test, batch_size=32)
@@ -293,7 +317,7 @@ def neural_network(labels,features):
     # Print the accuracy:
     from sklearn.metrics import accuracy_score
     classes = np.argmax(proba, axis=1)
-    accuracy_score(y_test, classes)
+    print("The neural network model has an accuracy score of:", accuracy_score(y_test, classes))
   
     return
 ```
