@@ -180,7 +180,7 @@ def SVM_rbf_kernel(labels, features):
   
     #split into training and testing set
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(features, labels[:,0], test_size=.2)
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=.2)
   
     # Set a range of possible values for our C parameter and gamma parameter to iterate through
     possible_C = np.logspace(-3, 9, 13)
@@ -201,6 +201,7 @@ def SVM_rbf_kernel(labels, features):
     #print(grid.best_params_)
 
     # Create our svm model with rbf kernels using our optimal params
+    # Note that the ** syntax may not work in Python <3.5
     svc_rbf = SVC(**grid.best_params_, kernel="rbf")
     svc_rbf.fit(X_train, y_train)
     y_pred_svc = svc_rbf.decision_function(X_test)
@@ -217,9 +218,9 @@ def neural_network(labels,features):
   
     #split into training and testing set
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(features, labels[:,0], test_size=.2)
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=.2)
 
-    # specify the hidden layer sizes: --> this is up to you to decide specifications
+    # specify the hidden layer sizes: --> this is up to us to decide specifications
     layer_sizes = [10, 5]
 
     # Keras uses the Sequential model for linear stacking of layers.
