@@ -9,6 +9,7 @@ import os
 import numpy as np
 import nibabel as nb
 import pandas as pd
+import sklearn.preprocessing as preproc
 ```
 
 Then we define some functions. Please look at the 
@@ -140,9 +141,10 @@ subjects = []
 # Iterate through files in directory
 files = os.listdir(cwd)
 for f in files:
-    features = np.array([]); labels = np.array([])
-    features, labels = load_haxby_data(cwd, 'subj1', 'mask4_vt')
-    sub = average_trials(features, labels)
-    subjects.append(sub)
-print subjects, subjects[0][0, 0], subjects[0][0, 1], subjects[0][0, 2], type(subjects[0])
+    if f.startswith('sub'):
+        features = np.array([]); labels = np.array([])
+        features, labels = load_haxby_data(cwd, f, 'mask4_vt')
+        sub = average_trials(features, labels)
+        subjects.append(sub)
+print subjects
 ```
