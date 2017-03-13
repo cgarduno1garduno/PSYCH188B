@@ -144,3 +144,160 @@ for f in files:
         subjects.append(sub)
 print subjects
 ```
+
+Now, we will make functions for our models. Here is the function for logistic regression.
+```python
+def logistic_regression(labels,features):
+    #@ param labels are the labels of one subject's cleaned/preprocessed dataset
+    # #@ param features are the features of one subject's cleaned/preprocessed dataset
+    
+    #split into training and testing set
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=.2)
+    
+    # Import our scikit-learn function
+    from sklearn.linear_model import LogisticRegression
+  
+    # Create our logistic regression model
+    logreg = LogisticRegression()
+  
+    # Train our model on our data
+    logreg.fit(X_train, y_train)
+    y_pred_lr = logreg.decision_function(X_test)
+  
+    # Test our model and score it
+    score3 = logreg.score(X_test, y_test)
+    print("The logistic regression model has an accuracy score of:", score3)
+  
+    return
+```
+Here is the function for SVM with rbf kernel.
+```python
+def SVM_rbf_kernel(labels, features):
+    #@ param labels are the labels for one subject's cleaned/preprocessed dataset
+    #@ param features are the features for one subject's cleaned/preprocessed dataset
+  
+    # Import our scikit-learn stuff
+    from sklearn.svm import SVC
+    from sklearn.grid_search import GridSearchCV
+    from sklearn.cross_validation import StratifiedKFold
+  
+    #split into training and testing set
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(features, labels[:,0], test_size=.2)
+  
+    # Set a range of possible values for our C parameter and gamma parameter to iterate through
+    possible_C = np.logspace(-3, 9, 13)
+    possible_gamma = np.logspace(-7, 4, 12)
+  
+    # Fill a grid with our possibe combinations of C and gamma values
+    param_grid = dict(gamma=possible_gamma, C=possible_C)
+  
+    # Create our cross-validation function
+    cv = StratifiedKFold(y_train, 10) # Uses our labels as our y-vector, makes 10 folds
+  
+    # Create our svm model
+    svc = SVC()
+  
+    # Cross-validate our parameters in our grid to find best combination of the params
+    grid = GridSearchCV(svc, param_grid=param_grid, cv=cv)
+    grid.fit(X_train, y_train)
+    #print(grid.best_params_)
+
+    # Create our svm model with rbf kernels using our optimal params
+    svc_rbf = SVC(**grid.best_params_, kernel="rbf")
+    svc_rbf.fit(X_train, y_train)
+    y_pred_svc = svc_rbf.decision_function(X_test)
+    score1 = svc_rbf.score(X_test, y_test)
+    print("The SVC model with RBF kernals has an accuracy score of:", score1)
+  
+    return
+```
+Here is the function for keras neural network.
+```python
+def neural_network(labels,features):
+    # @ param labels takes in the labels of one subject's cleaned data set
+    # @ param features takes in the features of one subject's cleaned data set
+  
+    #split into training and testing set
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(features, labels[:,0], test_size=.2)
+
+    # specify the hidden layer sizes: --> this is up to you to decide specifications
+    layer_sizes = [10, 5]
+
+    # Keras uses the Sequential model for linear stacking of layers.
+    # That is, creating a neural network is as easy as (later) defining the layers!
+    from keras.models import Sequential
+    model = Sequential()
+  
+    # Use the dropout regularization method
+    from keras.layers import Dropout
+
+    # Now that we have the model, let's add some layers:
+    from keras.layers.core import Dense, Activation
+    # Everything we've talked about in class so far is referred to in 
+    # Keras as a "dense" connection between layers, where every input 
+    # unit connects to a unit in the next layer
+
+    # First a fully-connected (Dense) hidden layer with appropriate input
+    # dimension, 10 outputs, and ReLU activation
+    #THIS IS THE INPUT LAYER
+    model.add(Dense(
+        input_dim=X_train.shape[1], output_dim=layer_sizes[0]
+    ))
+    model.add(Activation('relu'))
+
+    #ADD DROPOUT --> MUST DECIDE PERCENTAGE OF INPUT UNITS TO DROPOUT
+    model.add(Dropout(.2))
+
+    # Now our second hidden layer with 10 inputs (from the first
+    # hidden layer) and 5 outputs. Also with ReLU activation
+    #THIS IS HIDDEN LAYER
+    model.add(Dense(
+        input_dim=layer_sizes[0], output_dim=layer_sizes[1]
+    ))
+    model.add(Activation('relu'))
+
+    #ADD DROPOUT
+    model.add(Dropout(.2))
+
+    # Finally, add a readout layer, mapping the 5 hidden units
+    # to two output units using the softmax function
+    #THIS IS OUR OUTPUT LAYER
+    model.add(Dense(output_dim=np.unique(y_train).shape[0], init='uniform'))
+    model.add(Activation('softmax'))
+
+    # Next we let the network know how to learn
+    from keras.optimizers import SGD
+    sgd = SGD(lr=0.001, decay=1e-7, momentum=.9)
+    model.compile(loss='categorical_crossentropy', optimizer=sgd)
+
+    # Before we can fit the network, we have to one-hot vectorize our response.
+    # Fortunately, there is a keras method for that.
+    from keras.utils.np_utils import to_categorical
+    # for each of our 8 categories, map an output
+    y_train_vectorized = to_categorical(y_train)
+
+    #print out shape
+    y_train_vectorized.shape
+  
+    #remember that the bigger the nb_epoch the better the fit (so go bigger than 50)
+    model.fit(X_train, y_train_vectorized, nb_epoch=50, batch_size=50, verbose = 0)
+
+    #now our neural network works like a scikit-learn classifier
+    proba = model.predict_proba(X_test, batch_size=32)
+
+    # Print the accuracy:
+    from sklearn.metrics import accuracy_score
+    classes = np.argmax(proba, axis=1)
+    accuracy_score(y_test, classes)
+  
+    return
+```
+Running our models.
+```python
+clf1 = logistic_regression(subjects[0][:,0],subjects[0][:,2:])
+clf2 = SVM_rbf_kernel(subjects[0][:,0],subjects[0][:,2:])
+clf3 = neural_network(subjects[0][:,0],subjects[0][:,2:])
+```
