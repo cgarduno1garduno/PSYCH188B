@@ -274,13 +274,18 @@ def neural_network(labels,features):
     # Fortunately, there is a keras method for that.
     from keras.utils.np_utils import to_categorical
     # for each of our 8 categories, map an output
-    y_train_vectorized = to_categorical(y_train)
-
+    # Must first convert each category string to consistent ints    
+    from sklearn.preprocessing import LabelEncoder
+    encoder = LabelEncoder()
+    encoder.fit(y_train)
+    encoded_y_train = encoder.transform(y_train)
+    y_train_vectorized = to_categorical(encoded_y_train)
+    
     #print out shape
-    y_train_vectorized.shape
+    #y_train_vectorized.shape
   
     #remember that the bigger the nb_epoch the better the fit (so go bigger than 50)
-    model.fit(X_train, y_train_vectorized, nb_epoch=50, batch_size=50, verbose = 0)
+    model.fit(X_train, y_train_vectorized, nb_epoch=150, batch_size=50, verbose = 0)
 
     #now our neural network works like a scikit-learn classifier
     proba = model.predict_proba(X_test, batch_size=32)
