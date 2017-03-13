@@ -7,7 +7,7 @@ Here we set up the necessary modules.
 ```python
 import os
 import numpy as np
-import nibabel as nb
+import nibabel as nib
 import pandas as pd
 import sklearn.preprocessing as preproc
 ```
