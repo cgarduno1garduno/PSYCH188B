@@ -327,3 +327,58 @@ clf1 = logistic_regression(subjects[0][:,0],subjects[0][:,2:])
 clf2 = SVM_rbf_kernel(subjects[0][:,0],subjects[0][:,2:])
 clf3 = neural_network(subjects[0][:,0],subjects[0][:,2:])
 ```
+To visualize how well our models did, we plotted ROC curves.
+```python
+# First, create a set of predicted y-values
+pred_y1 = clf1.predict(X_test)
+pred_y2 = clf2.predict(X_test)
+pred_y3 = clf3.predict(X_test)
+
+# plot ROC for logistic regression
+from sklearn import metrics
+fpr0, tpr0, thresholds = metrics.roc_curve(y_test, pred_y1)
+roc_auc0 = metrics.roc_auc_score(y_test, pred_y1)
+
+plt.figure()
+lw = 2
+plt.plot(fpr0, tpr0, color='darkorange', lw=lw, label='ROC curve (area = %0.2f)' % roc_auc0)
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--') plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC: SVM with RBF Kernel')
+plt.legend(loc="lower right")
+plt.show()
+
+# plot ROC for SVM with RBF kernel
+from sklearn import metrics
+fpr0, tpr0, thresholds = metrics.roc_curve(y_test, pred_y2)
+roc_auc0 = metrics.roc_auc_score(y_test, pred_y2)
+
+plt.figure()
+lw = 2
+plt.plot(fpr0, tpr0, color='darkorange', lw=lw, label='ROC curve (area = %0.2f)' % roc_auc0)
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--') plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC: SVM with RBF Kernel')
+plt.legend(loc="lower right")
+plt.show()
+
+# plot ROC for neural network
+from sklearn import metrics
+fpr0, tpr0, thresholds = metrics.roc_curve(y_test, pred_y3)
+roc_auc0 = metrics.roc_auc_score(y_test, pred_y3)
+
+plt.figure()
+lw = 2
+plt.plot(fpr0, tpr0, color='darkorange', lw=lw, label='ROC curve (area = %0.2f)' % roc_auc0)
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--') plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC: SVM with RBF Kernel')
+plt.legend(loc="lower right")
+plt.show()
+```
