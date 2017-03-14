@@ -127,21 +127,11 @@ def average_trials(features, labels):
     return np.array(averaged)
 ```
 
-We've defined our functions and now let's get to work. Please ensure that `/haxby2001-188B` is a subfolder in your directory and that the subject files in are named `subj1`, `subj2`, etc. 
+We want to preprocess our data to make it easier to classify.
 ```python
-cwd = os.getcwd()+'/haxby2001-188B' # set working directory
-
-# Initialize subjects list
-subjects = []
-
-# Iterate through files in directory and average the data across chunks by category for each subject
-files = os.listdir(cwd)
-for f in files:
-    if f.startswith('sub'):
-        features = np.array([]); labels = np.array([])
-        features, labels = load_haxby_data(cwd, f, 'mask4_vt')
-        sub = average_trials(features, labels)
-        subjects.append(sub)
+#not finished
+def preprocess(data, something):
+    #something
 ```
 
 Now, we will make functions for our models. Here is the function for logistic regression.
@@ -321,12 +311,44 @@ def neural_network(labels,features):
   
     return
 ```
+
+We've defined our functions and now let's get to work. Please ensure that `/haxby2001-188B` is a subfolder in your directory and that the subject files in are named `subj1`, `subj2`, etc. 
+```python
+cwd = os.getcwd()+'/haxby2001-188B' # set working directory
+
+# Initialize subjects list
+subjects = []
+
+# Iterate through files in directory and average the data across chunks by category for each subject
+files = os.listdir(cwd)
+for f in files:
+    if f.startswith('sub'):
+        features = np.array([]); labels = np.array([])
+        features, labels = load_haxby_data(cwd, f, 'mask4_vt')
+        sub = average_trials(features, labels)
+        subjects.append(sub)
+```
+
+Next we need to preprocess our data
+```python
+# preprocessor = something
+x_scaled = preprocessor.fit_transform(X_train)
+```
+
 Running our models.
 ```python
-clf1 = logistic_regression(subjects[0][:,0],subjects[0][:,2:])
-clf2 = SVM_rbf_kernel(subjects[0][:,0],subjects[0][:,2:])
-clf3 = neural_network(subjects[0][:,0],subjects[0][:,2:])
+model1 = logistic_regression(subjects[0][:,0],subjects[0][:,2:])
+model2 = SVM_rbf_kernel(subjects[0][:,0],subjects[0][:,2:])
+model3 = neural_network(subjects[0][:,0],subjects[0][:,2:])
 ```
+
+Use pipelines to make it easy to run the models with the preprocessor.
+```python
+clf1 = pp.make_pipeline(preprocessor, model1)
+clf2 = pp.make_pipeline(preprocessor, model2)
+clf3 = pp.make_pipeline(preprocessor, model3)
+```
+
 To visualize how well our models did, we plotted ROC curves.
 ```python
 # First, create a set of predicted y-values
