@@ -335,7 +335,7 @@ def neural_network(labels,features):
 
 We've defined our functions and now let's get to work. Please ensure that `/haxby2001-188B` is a subfolder in your directory and that the subject files in are named `subj1`, `subj2`, etc. 
 ```python
-def run_all():
+def run_all(train_mode=False):
     # Set working directory. In your working directory there is a subdirectory
     # expected to be named `/haxby2001-188B` with subject files inside
     cwd = os.getcwd()+'/haxby2001-188B'
@@ -344,6 +344,7 @@ def run_all():
     subjects = []
 
     # Iterate through files in directory
+    print 'Loading files in',cwd,'...'
     files = os.listdir(cwd)
     for f in files:
         if f.startswith('sub'):
@@ -352,22 +353,47 @@ def run_all():
             sub = average_trials(features, labels)
             subjects.append(sub)
         
+    print 'Preprocessing...'
     # Normalize data
     scaled_subjects = scale(subjects)
     
-    count1 = 0
-    print 'Logistic Regression'
-    for s in scaled_subjects:
-        count1+=1
-        print "\nSubject:", count1
-        model1 = logistic_regression(s[:,0],s[:,2:])
+    #------------------------------Training Mode---------------------------------
+    if train_mode == True:
+        # generate list of models
+        # inside code, append models one by one
+        from sklearn.externals import joblib
+        print 'Training models...\n'   # Training logistic regression
+        count1 = 0
+        print 'Training Logistic Regression'
+        for s in scaled_subjects:
+            count1+=1
+            print "\nSubject:", count1
+            model1 = logistic_regression(s[:,0],s[:,2:])
+            # name of model
+            joblib.dump(model1, name)
 
-    count2 = 0
-    print '\n\nSVM'
-    for s in scaled_subjects:
-        count2+=1
-        print "\nSubject:", count2
-        model2 = SVM_rbf_kernel(s[:,0],s[:,2:])
+        count2 = 0
+        print '\n\nTraining SVM'
+        for s in scaled_subjects:
+            count2+=1
+            print "\nSubject:", count2
+            model2 = SVM_rbf_kernel(s[:,0],s[:,2:])
+            # name of model
+            joblib.dump(model2)
+        
+        count3 = 0
+        print '\n\nTraining Neural Network'
+        for s in scaled_subjects:
+            count3+=1
+            print '\nSubject:',count3
+            model3 = neural_network(scaled_subjects[0][:,0],scaled_subjects[0][:,2:])
+            model.save(model3) #save model
+    return
+    #------------------------------Training Mode---------------------------------
+    
+    # Testing
+    # load models
+    # test models
 ```
 
 Running our models.
