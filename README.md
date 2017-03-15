@@ -323,24 +323,39 @@ def neural_network(labels,features):
 
 We've defined our functions and now let's get to work. Please ensure that `/haxby2001-188B` is a subfolder in your directory and that the subject files in are named `subj1`, `subj2`, etc. 
 ```python
-cwd = os.getcwd()+'/haxby2001-188B' # set working directory
+def run_all():
+    # Set working directory. In your working directory there is a subdirectory
+    # expected to be named `/haxby2001-188B` with subject files inside
+    cwd = os.getcwd()+'/haxby2001-188B'
 
-# Initialize subjects list
-subjects = []
+    # Initialize subjects list
+    subjects = []
 
-# Iterate through files in directory and average the data across chunks by category for each subject
-files = os.listdir(cwd)
-for f in files:
-    if f.startswith('sub'):
-        features = np.array([]); labels = np.array([])
-        features, labels = load_haxby_data(cwd, f, 'mask4_vt')
-        sub = average_trials(features, labels)
-        subjects.append(sub)
+    # Iterate through files in directory
+    files = os.listdir(cwd)
+    for f in files:
+        if f.startswith('sub'):
+            features = np.array([]); labels = np.array([])
+            features, labels = load_haxby_data(cwd, f, 'mask4_vt')
+            sub = average_trials(features, labels)
+            subjects.append(sub)
         
-# Normalize data
-# Note: This will rewrite the subjects variable so if you want to keep the 
-#       original data, generate a new variable
-subjects = scale(subjects)
+    # Normalize data
+    scaled_subjects = scale(subjects)
+    
+    count1 = 0
+    print 'Logistic Regression'
+    for s in scaled_subjects:
+        count1+=1
+        print "\nSubject:", count1
+        model1 = logistic_regression(s[:,0],s[:,2:])
+
+    count2 = 0
+    print '\n\nSVM'
+    for s in scaled_subjects:
+        count2+=1
+        print "\nSubject:", count2
+        model2 = SVM_rbf_kernel(s[:,0],s[:,2:])
 ```
 
 Running our models.
