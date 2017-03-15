@@ -139,7 +139,7 @@ def scale(subjects):
     for subject in subjects:
         x = np.array(subject[:,2:], dtype=float)           # Get features
         mean = np.nanmean(x)                               # Get mean
-        x[np.isnan(x).any()] = mean                        # assign mean to nans
+        x[np.isnan(x)] = mean                              # assign mean to nans
         scaled_x = preproc.scale(x)                        # normalize data
         scaled_data = np.hstack((subject[:,:2],scaled_x))  # Add labels back in
         scaled_subjects.append(scaled_data)                # add data to scaled_subjects
