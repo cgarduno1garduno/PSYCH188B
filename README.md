@@ -127,11 +127,24 @@ def average_trials(features, labels):
     return np.array(averaged)
 ```
 
-We want to preprocess our data to make it easier to classify.
+This will be our preprocessing. We normalize the data after generating the subjects list. 
 ```python
-#not finished
-def preprocess(data, something):
-    #something
+def scale(subjects):
+    # @param subjects: list of subject data
+    # @return scaled_subjects: list of scaled subject data
+    
+    # Initialize scaled subjects
+    scaled_subjects = []
+    
+    for subject in subjects:
+        x = np.array(subject[:,2:], dtype=float)           # Get features
+        mean = np.nanmean(x)                               # Get mean
+        x[np.isnan(x).any()] = mean                        # assign mean to nans
+        scaled_x = preproc.scale(x)                        # normalize data
+        scaled_data = np.hstack((subject[:,:2],scaled_x))  # Add labels back in
+        scaled_subjects.append(scaled_data)                # add data to scaled_subjects
+        
+    return scaled_subjects
 ```
 
 Now, we will make functions for our models. Here is the function for logistic regression.
@@ -327,12 +340,11 @@ for f in files:
         features, labels = load_haxby_data(cwd, f, 'mask4_vt')
         sub = average_trials(features, labels)
         subjects.append(sub)
-```
-
-Next we need to preprocess our data
-```python
-# preprocessor = something
-x_scaled = preprocessor.fit_transform(X_train)
+        
+# Normalize data
+# Note: This will rewrite the subjects variable so if you want to keep the 
+#       original data, generate a new variable
+subjects = scale(subjects)
 ```
 
 Running our models.
