@@ -244,7 +244,7 @@ def neural_network(labels,features):
     X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=.2)
 
     # specify the hidden layer sizes: --> this is up to us to decide specifications
-    layer_sizes = [10, 5]
+    layer_sizes = [300,144, 36]
 
     # Keras uses the Sequential model for linear stacking of layers.
     # That is, creating a neural network is as easy as (later) defining the layers!
@@ -261,7 +261,7 @@ def neural_network(labels,features):
     # unit connects to a unit in the next layer
 
     # First a fully-connected (Dense) hidden layer with appropriate input
-    # dimension, 10 outputs, and ReLU activation
+    # dimension, 577 INPUTS AND 300 OUTPUTS, and ReLU activation
     #THIS IS THE INPUT LAYER
     model.add(Dense(
         input_dim=X_train.shape[1], output_dim=layer_sizes[0]
@@ -271,11 +271,22 @@ def neural_network(labels,features):
     #ADD DROPOUT --> MUST DECIDE PERCENTAGE OF INPUT UNITS TO DROPOUT
     model.add(Dropout(.2))
 
-    # Now our second hidden layer with 10 inputs (from the first
-    # hidden layer) and 5 outputs. Also with ReLU activation
+    # Now our second hidden layer with 300 inputs (from the first
+    # hidden layer) and 144 outputs. Also with ReLU activation
     #THIS IS HIDDEN LAYER
     model.add(Dense(
         input_dim=layer_sizes[0], output_dim=layer_sizes[1]
+    ))
+    model.add(Activation('relu'))
+
+    #ADD DROPOUT
+    model.add(Dropout(.2))
+
+#THIRD HIDDEN LAYER WITH 144 INPUTS AND 36 OUTPUTS, RELU ACTIVATION
+    #Also with ReLU activation
+    #THIS IS HIDDEN LAYER
+    model.add(Dense(
+        input_dim=layer_sizes[1], output_dim=layer_sizes[2]
     ))
     model.add(Activation('relu'))
 
@@ -302,6 +313,7 @@ def neural_network(labels,features):
     encoder = LabelEncoder()
     encoder.fit(y_train)
     encoded_y_train = encoder.transform(y_train)
+    encoded_y_test = encoder.transform(y_test)
     y_train_vectorized = to_categorical(encoded_y_train)
     
     #print out shape
@@ -316,7 +328,7 @@ def neural_network(labels,features):
     # Print the accuracy:
     from sklearn.metrics import accuracy_score
     classes = np.argmax(proba, axis=1)
-    print("The neural network model has an accuracy score of:", accuracy_score(y_test, classes))
+    print("The neural network model has an accuracy score of:", accuracy_score(encoded_y_test, classes))
   
     return
 ```
