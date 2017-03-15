@@ -180,60 +180,56 @@ def logistic_regression(labels,features):
 Here is the function for SVM with rbf kernel.
 ```python
 def SVM_rbf_kernel(labels, features):
-    #@ param labels are the labels for one subject's cleaned/preprocessed dataset
-    #@ param features are the features for one subject's cleaned/preprocessed dataset
+    # @param labels are the labels for one subject's cleaned/preprocessed dataset
+    # @param features are the features for one subject's cleaned/preprocessed dataset
   
     # Import our scikit-learn stuff
-    from sklearn.svm import SVC
-    from sklearn.grid_search import GridSearchCV
+    from sklearn.svm              import SVC
+    from sklearn.grid_search      import GridSearchCV
     from sklearn.cross_validation import StratifiedKFold
-  
+    from sklearn.model_selection  import train_test_split
+
     #split into training and testing set
-    from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=.2)
   
     # Set a range of possible values for our C parameter and gamma parameter to iterate through
-    possible_C = np.logspace(-3, 9, 13)
+    possible_C     = np.logspace(-3, 9, 13)
     possible_gamma = np.logspace(-7, 4, 12)
   
     # Fill a grid with our possibe combinations of C and gamma values
     param_grid = dict(gamma=possible_gamma, C=possible_C)
-  
-    # Create our cross-validation function
-    cv = StratifiedKFold(y_train, 5) # Uses our labels as our y-vector, makes 5 folds
-  
-    # Create our svm model
-    svc = SVC()
-  
+    
     # Cross-validate our parameters in our grid to find best combination of the params
+    svc = SVC() # initialize model
+    cv = StratifiedKFold(y_train, 5) #initialize cross-validation fxn, 5 folds
     grid = GridSearchCV(svc, param_grid=param_grid, cv=cv)
     grid.fit(X_train, y_train)
-    #print(grid.best_params_)
+    print grid.best_params_
 
     # Create our svm model with rbf kernels using our optimal params and score it
-    # Note that the ** syntax may not work in Python <3.5
-    svc_rbf = SVC(**grid.best_params_, kernel="rbf", decision_function_shape = 'ovr')
+    svc_rbf = SVC(kernel = 'rbf',**grid.best_params_)
     svc_rbf.fit(X_train, y_train)
     y_pred_svc = svc_rbf.decision_function(X_test)
     score2 = svc_rbf.score(X_test, y_test)
     
-    print("The SVC model with RBF kernals has an accuracy score of:", score2)
+    print "The SVC model with RBF kernels has an accuracy score of:", score2
     
     # Scores the average of ten tests with the model
     score2_avg = cross_val_score(svc_rbf, features, labels, scoring='accuracy', cv=10)
-    print("The SVM model with RBF kernals has an average score of:", score2_avg.mean())
+    print "The SVM model with RBF kernels has an average score of:", score2_avg.mean()
     
     # Now we try our svm model with linear kernels using our optimal params and score it
-    svc_linear = SVC(**grid.best_params_, kernel="linear", decision_function_shape = 'ovr')
+    #svc_linear = SVC(**grid.best_params_, kernel="linear", decision_function_shape = 'ovr')
+    svc_linear = SVC(kernel="linear", decision_function_shape = 'ovr', **grid.best_params_)
     svc_linear.fit(X_train, y_train)
     y_pred_svc = svc_linear.decision_function(X_test)
     score3 = svc_linear.score(X_test, y_test)
     
-    print("The SVM model with linear kernals has an accuracy score of:", score3)
+    print "The SVM model with linear kernels has an accuracy score of:", score3
 
     # Scores the average of ten tests with the model
     score3_avg = cross_val_score(svc_rbf, features, labels, scoring='accuracy', cv=10)
-    print("The SVM model with linear kernals has an average score of:", score3_avg.mean())
+    print "The SVM model with linear kernels has an average score of:", score3_avg.mean()
   
     return
 ```
