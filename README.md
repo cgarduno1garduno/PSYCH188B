@@ -399,8 +399,8 @@ def run_all(train_mode=False):
     #------------------------------Training Mode---------------------------------
     #-------------------------------Testing Mode---------------------------------
     # For scikitlearn models
-    for i in range(len(scaled_data)):
-        x = scaled_data[i][:,2:]
+    for i in range(len(scaled_subjects)):
+        x = scaled_subjects[i][:,2:]
         model = joblib.load(sklearn_models[i])
         model.predict(x)
         print model.predict(x)
@@ -408,7 +408,7 @@ def run_all(train_mode=False):
     # For keras models
     from keras.models import load_model
     for i in range(len(scaled_data)):
-        x = scaled_data[i][:,2:]
+        x = scaled_subjects[i][:,2:]
         model = load_model(keras_models[i])
         model.predict(x)   
         print model.predict_classes(x)
