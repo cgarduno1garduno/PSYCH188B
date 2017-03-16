@@ -175,7 +175,7 @@ def logistic_regression(labels,features):
     score1_avg = cross_val_score(logreg, features, labels, scoring='accuracy', cv=10)
     print("The logistic regression model has an average accuracy score of:", score1_avg.mean())
   
-    return
+    return logreg
 ```
 Here is the function for SVM with rbf kernel.
 ```python
@@ -231,7 +231,7 @@ def SVM_rbf_kernel(labels, features):
     score3_avg = cross_val_score(svc_rbf, features, labels, scoring='accuracy', cv=10)
     print "The SVM model with linear kernels has an average score of:", score3_avg.mean()
   
-    return
+    return svc_rbf
 ```
 Here is the function for keras neural network.
 ```python
@@ -330,7 +330,7 @@ def neural_network(labels,features):
     classes = np.argmax(proba, axis=1)
     print("The neural network model has an accuracy score of:", accuracy_score(encoded_y_test, classes))
   
-    return
+    return model
 ```
 
 We've defined our functions and now let's get to work. Please ensure that `/haxby2001-188B` is a subfolder in your directory and that the subject files in are named `subj1`, `subj2`, etc. 
@@ -364,33 +364,38 @@ def run_all(train_mode=False):
         # generate list of models
         # inside code, append models one by one
         from sklearn.externals import joblib
-        print 'Training models...\n'   # Training logistic regression
+        print 'Training models...\n'     
         count1 = 0
-        print 'Training Logistic Regression'
+        print '\n\nTraining Logistic Regression'  # Training logistic regression
         for s in scaled_subjects:
+            modelname1=sklearn_models[count1] # name of model
             count1+=1
-            print "\nSubject:", count1
-            model1 = logistic_regression(s[:,0],s[:,2:])
-            # name of model
-            joblib.dump(model1, name)
-
+            print "\nSubject:" , count1 
+            log_reg_model = logistic_regression(s[:,0],s[:,2:])
+            joblib.dump(log_reg_model, modelname1)
+                
         count2 = 0
-        print '\n\nTraining SVM'
+        name = 4
+        print '\n\nTraining SVM with RBF kernels' 
         for s in scaled_subjects:
+            modelname2=sklearn_models[name] # name of model
+            name +=1
             count2+=1
-            print "\nSubject:", count2
-            model2 = SVM_rbf_kernel(s[:,0],s[:,2:])
+            print "\nSubject:", count2  
+            svm_model = SVM_rbf_kernel(s[:,0],s[:,2:])
             # name of model
-            joblib.dump(model2)
-        
+            joblib.dump(svm_model, modelname2)
+             
         count3 = 0
-        print '\n\nTraining Neural Network'
+        print '\n\nTraining Neural Network'  
         for s in scaled_subjects:
+            modelname3 = keras_models[count3]
             count3+=1
-            print '\nSubject:',count3
-            model3 = neural_network(scaled_subjects[0][:,0],scaled_subjects[0][:,2:])
-            model.save(model3) #save model
-    return
+            print '\nSubject:' ,count3 
+            nn_model = neural_network(s[:,0],s[:,2:])
+            nn_model.save(modelname3) #save model
+                       
+        return
     #------------------------------Training Mode---------------------------------
     #-------------------------------Testing Mode---------------------------------
     # For scikitlearn models
