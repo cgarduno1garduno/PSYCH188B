@@ -312,6 +312,7 @@ def neural_network(labels,features):
     from sklearn.preprocessing import LabelEncoder
     encoder = LabelEncoder()
     encoder.fit(y_train)
+    np.save('classes.npy', encoder.classes_)
     encoded_y_train = encoder.transform(y_train)
     encoded_y_test = encoder.transform(y_test)
     y_train_vectorized = to_categorical(encoded_y_train)
@@ -344,7 +345,7 @@ def run_all(train_mode=False):
     subjects = []
 
     # Iterate through files in directory
-    print 'Loading files in',cwd,'...'
+    print('Loading files in',cwd,'...') 
     files = os.listdir(cwd)
     for f in files:
         if f.startswith('sub'):
@@ -353,68 +354,75 @@ def run_all(train_mode=False):
             sub = average_trials(features, labels)
             subjects.append(sub)
         
-    print 'Preprocessing...'
+    print('Preprocessing...')    
     # Normalize data
     scaled_subjects = scale(subjects)
-    sklearn_models = ['logreg_s1','logreg_s2','logreg_s3','logreg_s4','logreg_s5','svm_s1','svm_s2','svm_s3','svm_s4','svm_s5']
-    keras_models = ['nn_s1','nn_s2','nn_s3','nn_s4','nn_s5']
+    sklearn_models = ['logreg_s1.pkl','logreg_s2.pkl','logreg_s3.pkl','logreg_s5.pkl','svm_s1.pkl','svm_s2.pkl','svm_s3.pkl','svm_s5.pkl']
+    keras_models = ['nn_s1.h5','nn_s2.h5','nn_s3.h5','nn_s5.h5']
     
+    from sklearn.externals import joblib
+    from keras.models import load_model
     #------------------------------Training Mode---------------------------------
     if train_mode == True:
         # generate list of models
         # inside code, append models one by one
-        from sklearn.externals import joblib
-        print 'Training models...\n'     
+        print('Training models...\n')      
         count1 = 0
-        print '\n\nTraining Logistic Regression'  # Training logistic regression
+        print('\n\nTraining Logistic Regression')   # Training logistic regression
         for s in scaled_subjects:
             modelname1=sklearn_models[count1] # name of model
             count1+=1
-            print "\nSubject:" , count1 
+            print("\nSubject:" , count1)  
             log_reg_model = logistic_regression(s[:,0],s[:,2:])
             joblib.dump(log_reg_model, modelname1)
                 
         count2 = 0
         name = 4
-        print '\n\nTraining SVM with RBF kernels' 
+        print('\n\nTraining SVM with RBF kernels')  
         for s in scaled_subjects:
             modelname2=sklearn_models[name] # name of model
             name +=1
             count2+=1
-            print "\nSubject:", count2  
+            print("\nSubject:", count2)   
             svm_model = SVM_rbf_kernel(s[:,0],s[:,2:])
             # name of model
             joblib.dump(svm_model, modelname2)
              
         count3 = 0
-        print '\n\nTraining Neural Network'  
+        print('\n\nTraining Neural Network')   
         for s in scaled_subjects:
             modelname3 = keras_models[count3]
             count3+=1
-            print '\nSubject:' ,count3 
+            print('\nSubject:' ,count3)  
             nn_model = neural_network(s[:,0],s[:,2:])
             nn_model.save(modelname3) #save model
                        
         return
     #------------------------------Training Mode---------------------------------
-    #-------------------------------Testing Mode---------------------------------
+    #------------------------------Testing Mode----------------------------------
     # For scikitlearn models
     for i in range(len(scaled_subjects)):
-        x = scaled_subjects[i][:,2:]
-        model = joblib.load(sklearn_models[i])
-        model.predict(x)
-        print model.predict(x)
+        for l in range((len(sklearn_models))):
+            x = scaled_subjects[i][:,2:]
+            model = joblib.load(sklearn_models[i])
+            print('\nSubject:' ,i+1)
+            print('Model:',sklearn_models[l])
+            print(model.predict(x)) 
    
     # For keras models
     from keras.models import load_model
-    for i in range(len(scaled_data)):
-        x = scaled_subjects[i][:,2:]
-        model = load_model(keras_models[i])
-        model.predict(x)   
-        print model.predict_classes(x)
-    
+    from sklearn.preprocessing import LabelEncoder
+    encoder = LabelEncoder()
+    encoder.classes_ = np.load('classes.npy')
+    for i in range(len(scaled_subjects)):
+        for l in range((len(keras_models))):
+            x = scaled_subjects[i][:,2:]
+            model = load_model(keras_models[i])
+            print('\nSubject:' ,i+1)
+            print('Model:',keras_models[l])
+            print(encoder.inverse_transform(model.predict_classes(x)))
+    #-----------------------------Testing Mode----------------------------------
     return
-    #-------------------------------Testing Mode---------------------------------
 ```
 
 Running our models.
