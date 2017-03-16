@@ -398,13 +398,15 @@ def run_all(train_mode=False):
         x = scaled_data[i][:,2:]
         model = joblib.load(sklearn_models[i])
         model.predict(x)
-    
+        print model.predict(x)
+   
     # For keras models
     from keras.models import load_model
     for i in range(len(scaled_data)):
         x = scaled_data[i][:,2:]
         model = load_model(keras_models[i])
         model.predict(x)   
+        print model.predict_classes(x)
     
     return
     #-------------------------------Testing Mode---------------------------------
