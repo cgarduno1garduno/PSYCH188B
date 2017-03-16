@@ -392,10 +392,22 @@ def run_all(train_mode=False):
             model.save(model3) #save model
     return
     #------------------------------Training Mode---------------------------------
+    #-------------------------------Testing Mode---------------------------------
+    # For scikitlearn models
+    for i in range(len(scaled_data)):
+        x = scaled_data[i][:,2:]
+        model = joblib.load(sklearn_models[i])
+        model.predict(x)
     
-    # Testing
-    # load models
-    # test models
+    # For keras models
+    from keras.models import load_model
+    for i in range(len(scaled_data)):
+        x = scaled_data[i][:,2:]
+        model = load_model(keras_models[i])
+        model.predict(x)   
+    
+    return
+    #-------------------------------Testing Mode---------------------------------
 ```
 
 Running our models.
