@@ -356,6 +356,8 @@ def run_all(train_mode=False):
     print 'Preprocessing...'
     # Normalize data
     scaled_subjects = scale(subjects)
+    sklearn_models = ['logreg_s1','logreg_s2','logreg_s3','logreg_s4','logreg_s5','svm_s1','svm_s2','svm_s3','svm_s4','svm_s5']
+    keras_models = ['nn_s1','nn_s2','nn_s3','nn_s4','nn_s5']
     
     #------------------------------Training Mode---------------------------------
     if train_mode == True:
